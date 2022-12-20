@@ -99,14 +99,14 @@
 	      <id>nexus</id>
 	      <name>Landmark Technologies Releases Nexus Repository</name>
 
-	      <url>http://3.235.140.134:8181/mydevops/repository/tesla-web-releases/</url>
+	      <url>http://172.31.73.159:8181/mydevops/repository/tesla-web-releases/</url>
 
 	    </repository>
 	    <snapshotRepository>
 	      <id>nexus</id>
 	      <name>Landmark Technologies Snapshot Nexus Repository </name>
 
-	      <url>http://3.235.140.134:8181/mydevops/repository/tesla-web-snapshots/</url>
+	      <url>http://172.31.73.159:8181/mydevops/repository/tesla-web-snapshots/</url>
 
 	    </snapshotRepository>
 	    
