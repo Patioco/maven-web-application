@@ -6,7 +6,7 @@
 	<artifactId>maven-web-application</artifactId>
 	<packaging>war</packaging>
 	
-	<version>0.0.2-SNAPSHOT</version> 
+	<version>0.0.3-SNAPSHOT</version> 
 	
 	<name>maven-web-application</name>
 
@@ -25,8 +25,8 @@
 
 		<sonar.host.url>http://172.31.9.66:9000/</sonar.host.url>
 
-		<sonar.login>a8562fa6598c0182752c14e517648240a6d9821b</sonar.login>
-		<!--<sonar.password>admin</sonar.password>-->
+		<sonar.login>admin</sonar.login>
+		<sonar.password>admin</sonar.password>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
