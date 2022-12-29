@@ -1,0 +1,59 @@
+pipeline{
+    agent any
+    tools{
+        maven 'maven3.8.6'
+    }
+    
+    triggers{
+        pollSCM('* * * * *')
+    }
+
+    options{
+        timestamps()
+        buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '2', daysToKeepStr: '', numToKeepStr: '2'))
+    }
+    
+    stages{
+        stage('1 Clone Repo'){
+            steps{
+                git 'https://github.com/Patioco/maven-web-app.git'
+                
+            }
+        }
+    
+    
+    
+        stage('2 Maven Build'){
+            steps{
+                sh "mvn clean package"
+            }    
+        }
+        
+    
+    
+        stage('3 Code Quality Review'){
+            steps{
+                withSonarQubeEnv('Sonar-Server7.8'){
+                    sh "mvn sonar:sonar"
+                }    
+            }
+        }
+                
+    
+        
+    
+    
+        stage('4 Deploy Built Artifacts'){
+            steps{
+                nexusArtifactUploader artifacts: [[artifactId: '01-maven-web-app', classifier: '', file: 'target/01-maven-web-app.war', type: 'war']], credentialsId: 'Nexus-credentials', groupId: 'in.ashokit', nexusUrl: '172.31.73.159:8181/mydevops', nexusVersion: 'nexus3', protocol: 'http', repository: 'ashokit-snapshot', version: '1.0-SNAPSHOT'
+            }
+        }
+    
+    
+        stage('5 Deploy to UAT'){
+            steps{
+                deploy adapters: [tomcat9(credentialsId: 'tomcat-credential', path: '', url: 'http://172.31.81.99:8080/')], contextPath: null, war: 'target/01-maven-web-app.war'
+            }
+        }    
+    }
+}
