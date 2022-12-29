@@ -16,7 +16,7 @@ pipeline{
     stages{
         stage('1 Clone Repo'){
             steps{
-                git branch: 'feature', url: 'https://github.com/MithunTechnologiesDevOps/maven-web-application.git'
+                git 'https://github.com/Patioco/maven-web-application/tree/feature'
                 
             }
         }
