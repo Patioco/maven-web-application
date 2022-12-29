@@ -45,14 +45,14 @@ pipeline{
     
         stage('4 Deploy Built Artifacts'){
             steps{
-                nexusArtifactUploader artifacts: [[artifactId: '01-maven-web-app', classifier: '', file: 'target/01-maven-web-app.war', type: 'war']], credentialsId: 'Nexus-credentials', groupId: 'in.ashokit', nexusUrl: '172.31.73.159:8181/mydevops', nexusVersion: 'nexus3', protocol: 'http', repository: 'ashokit-snapshot', version: '1.0-SNAPSHOT'
+                nexusArtifactUploader artifacts: [[artifactId: '01-maven-web-app', classifier: '', file: 'target/*.war', type: 'war']], credentialsId: 'Nexus-credentials', groupId: 'in.ashokit', nexusUrl: '172.31.73.159:8181/mydevops', nexusVersion: 'nexus3', protocol: 'http', repository: 'ashokit-snapshot', version: '1.0-SNAPSHOT'
             }
         }
     
     
         stage('5 Deploy to UAT'){
             steps{
-                deploy adapters: [tomcat9(credentialsId: 'tomcat-credential', path: '', url: 'http://172.31.81.99:8080/')], contextPath: null, war: 'target/01-maven-web-app.war'
+                deploy adapters: [tomcat9(credentialsId: 'tomcat-credential', path: '', url: 'http://172.31.81.99:8080/')], contextPath: null, war: 'target/*.war'
             }
         }    
     }
