@@ -1,59 +1,43 @@
-pipeline{
-    agent any
-    tools{
-        maven 'maven3.8.6'
+node{
+    def mavenHome = tool name: 'Maven3.8.7'
+    
+    stage('1. Clone Repo'){
+        git branch: 'feature', url: 'https://github.com/Patioco/maven-web-application.git'
     }
     
-    triggers{
-        pollSCM('* * * * *')
+    stage('2. Test & Build'){
+        sh "${mavenHome}/bin/mvn package"
     }
+    
+    stage('3. Code Quality Review'){
+        sh "${mavenHome}/bin/mvn sonar:sonar"
+    }
+    
+    stage('4. Upload Artifacts'){
+        sh "${mavenHome}/bin/mvn deploy"
+    }
+    
+    stage('5. Deploy to UAT'){
+        deploy adapters: [tomcat9(credentialsId: 'Tomcat-credential', path: '', url: 'http://172.31.89.51:8080')], contextPath: null, war: 'target/tesla-app.war'
+    }
+    
+    stage('6. Approval Gate'){
+        sh "echo 'ready for review' "
+        timeout(time:5, unit: 'DAYS') {
+            input message: 'Application ready for deployment, please review and approve'
+        }
+    }    
+    
+    stage('7. Deploy to PROD'){
+        deploy adapters: [tomcat9(credentialsId: 'Tomcat-credential', path: '', url: 'http://172.31.89.51:8080')], contextPath: null, war: 'target/tesla-app.war'
+    }
+    
+    stage('8. Email Notification'){
+        emailext body: '''Hi Guys,
 
-    options{
-        timestamps()
-        buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '2', daysToKeepStr: '', numToKeepStr: '2'))
-    }
-    
-    stages{
-        stage('1 Clone Repo'){
-            steps{
-                git branch: 'feature', url: 'https://github.com/Patioco/maven-web-application.git'
-                
-            }
-        }
-    
-    
-    
-        stage('2 Maven Build'){
-            steps{
-                sh "mvn clean package"
-            }    
-        }
-        
-    
-    
-        stage('3 Code Quality Review'){
-            steps{
-                withSonarQubeEnv('Sonar-Server7.8'){
-                    sh "mvn sonar:sonar"
-                }    
-            }
-        }
-                
-    
-        
-    
-    
-        stage('4 Deploy Built Artifacts'){
-            steps{
-                nexusArtifactUploader artifacts: [[artifactId: '01-maven-web-app', classifier: '', file: 'target/tesla-app.war', type: 'war']], credentialsId: 'Nexus-credentials', groupId: 'in.ashokit', nexusUrl: '172.31.73.159:8181/mydevops', nexusVersion: 'nexus3', protocol: 'http', repository: 'ashokit-snapshot', version: '1.0-SNAPSHOT'
-            }
-        }
-    
-    
-        stage('5 Deploy to UAT'){
-            steps{
-                deploy adapters: [tomcat9(credentialsId: 'tomcat-credential', path: '', url: 'http://172.31.81.99:8080/')], contextPath: null, war: 'target/tesla-app.war'
-            }
-        }    
+        Good job on the Tesla Project! Keep it up.
+
+        Thanks
+        Landmark Group8''', subject: 'Appreciation', to: 'AbiOmo.design@gmail.com'
     }
 }
